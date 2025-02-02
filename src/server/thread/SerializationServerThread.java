@@ -22,11 +22,15 @@ public class SerializationServerThread extends Thread {
         try {
             ObjectInputStream request = new ObjectInputStream(client.getInputStream());
             Message message = (Message) request.readObject();
+            System.out.println("Recebido:");
             System.out.println(message);
 
             ObjectOutputStream response = new ObjectOutputStream(client.getOutputStream());
             message.setToken(this.generateToken());
             response.writeObject(message);
+            System.out.println();
+            System.out.println("Enviado: ");
+            System.out.println(message);
 
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);

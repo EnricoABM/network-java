@@ -7,25 +7,48 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 
 public class HttpClient {
 
     public static void main(String[] args) {
+        System.out.println("Cliente Iniciado...");
+        Scanner keyboard = new Scanner(System.in);
+        String cep;
+        do {
+            System.out.print("Informe o CEP: ");
+            cep = keyboard.nextLine();
+            cep = cep.replace("-", "");
+        } while(cep.length() != 8);
+
         try {
+            System.out.println("Criando Requisição Http...");
             RequestHttp request = new RequestHttp();
             request.setMethod("GET");
-            request.setUri("/ws/01001000/json/");
+            request.setUri("/ws/" + cep + "/json/");
             request.setHttpVersion("HTTP/1.1");
             request.addHeader("Accept", "application/json");
             request.addHeader("Host", "viacep.com.br");
 
             HttpClient client = new HttpClient();
-            String response = client.send(request, "viacep.com.br", 80);
-            System.out.println(response);
-        } catch (IOException e) {
+            System.out.println("Requisição Enviada...");
 
+            LocalTime before = LocalTime.now();
+            String response = client.send(request, "viacep.com.br", 80);
+            LocalTime after = LocalTime.now();
+
+            Long timeDif = before.until(after, ChronoUnit.SECONDS);
+
+            System.out.println();
+            System.out.println(response);
+
+            System.out.println("Tempo de resposta: " + timeDif + "s");
+        } catch (IOException e) {
+            System.out.println("Falha ao enviar a requisição");
         }
 
     }
